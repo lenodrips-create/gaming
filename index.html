@@ -1,182 +1,244 @@
-<!DOCTYPE html>
+OCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cartridge Club — a browser arcade waiting for cabinets</title>
-  <meta name="description" content="A neon browser arcade built with plain HTML, CSS and JavaScript. Drop a folder in games/ and it shows up here.">
-  <link rel="icon" href="images/favicon.svg" type="image/svg+xml">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>games</title>
+<link rel="icon" href="images/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#000000;
+    --panel:#101014;
+    --line:#2a2a33;
+    --text:#ffffff;
+    --muted:#8b8f9c;
+    --accent:#4ade4a;
+    --star:#ffffff;
+    color-scheme:dark;
+    box-sizing:border-box;
+    padding-top:env(safe-area-inset-top,0px);
+    padding-bottom:env(safe-area-inset-bottom,0px);
+  }
+  *,*::before,*::after{box-sizing:border-box;}
+  html{scroll-padding-top:env(safe-area-inset-top,0px);}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Open Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    font-size:15px;line-height:1.5;
+    text-transform:lowercase;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1100px;margin:0 auto;padding:26px 18px 70px;}
+ 
+  .top{display:flex;flex-wrap:wrap;align-items:center;gap:14px;
+       padding-bottom:16px;border-bottom:1px solid var(--line);}
+  .brand{font-size:20px;font-weight:700;letter-spacing:-.02em;margin-right:auto;}
+  .top nav{display:flex;gap:16px;}
+  .top nav a{color:var(--muted);text-decoration:none;font-size:13px;}
+  .top nav a:hover,.top nav a:focus-visible{color:var(--text);}
+ 
+  .search{margin:20px 0 14px;}
+  .search input{
+    width:100%;padding:11px 14px;border-radius:10px;
+    border:1px solid var(--line);background:var(--panel);
+    color:var(--text);font:inherit;text-transform:lowercase;
+  }
+  .search input::placeholder{color:var(--muted);}
+  .search input:focus-visible{outline:2px solid var(--accent);outline-offset:1px;}
+ 
+  .cats{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:30px;}
+  .cats button{
+    border:1px solid var(--line);background:var(--panel);color:var(--muted);
+    font:inherit;font-size:13px;text-transform:lowercase;
+    padding:6px 14px;border-radius:999px;cursor:pointer;
+  }
+  .cats button:hover{color:var(--text);}
+  .cats button[aria-pressed="true"]{background:#fff;border-color:#fff;color:#000;}
+  .cats button:focus-visible{outline:2px solid var(--accent);outline-offset:2px;}
+ 
+  h2{font-size:14px;font-weight:600;color:var(--muted);margin:0 0 12px;}
+  section{margin-bottom:36px;}
+ 
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;}
+ 
+  /* banner card */
+  .card{
+    position:relative;display:block;text-decoration:none;color:inherit;
+    aspect-ratio:16/7;
+    border:3px solid #d5d7dd;border-radius:18px;
+    overflow:hidden;background:#000;
+    isolation:isolate;
+  }
+  .card:hover{border-color:#fff;}
+  .card:focus-visible{outline:3px solid var(--accent);outline-offset:3px;}
+  .art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-1;}
+  .name{
+    position:absolute;inset:0;display:grid;place-items:center;
+    font-size:clamp(20px,2.6vw,32px);font-weight:600;color:#fff;
+    text-shadow:0 2px 10px rgba(0,0,0,.85),0 0 3px rgba(0,0,0,.9);
+    padding:0 40px;text-align:center;
+  }
+  .star{
+    position:absolute;top:8px;right:12px;
+    background:none;border:0;padding:2px;cursor:pointer;
+    color:var(--star);font-size:26px;line-height:1;
+    text-shadow:0 1px 6px rgba(0,0,0,.9);
+  }
+  .star[aria-pressed="true"]{color:#ffd84a;}
+  .star:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:5px;}
+ 
+  .empty{color:var(--muted);font-size:13px;border:1px dashed var(--line);
+         border-radius:14px;padding:22px;text-align:center;}
+  footer{border-top:1px solid var(--line);padding-top:16px;color:var(--muted);font-size:12px;text-align:center;}
+  @media (max-width:760px){.grid{grid-template-columns:repeat(2,1fr);}
+    .name{font-size:clamp(20px,4vw,30px);}}
+  @media (max-width:480px){.grid{grid-template-columns:1fr;}
+    .card{aspect-ratio:16/5;}
+    .name{font-size:32px;}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
 </head>
 <body>
-  <a class="skip-link" href="#main">Skip to content</a>
-
-  <header class="site-header">
-    <div class="shell nav-bar">
-      <a class="brand" href="index.html">
-        <img src="images/logo.svg" alt="">
-        Cartridge Club
-      </a>
-      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="navLinks">Menu</button>
-      <nav aria-label="Main">
-        <ul class="nav-links" id="navLinks">
-          <li><a href="index.html">Home</a></li>
-          <li><a href="pages/game.html">Arcade</a></li>
-          <li><a href="pages/about.html">About</a></li>
-          <li><a href="pages/contact.html">Contact</a></li>
-          <li><a class="nav-cta" href="pages/game.html">Enter the arcade</a></li>
-        </ul>
-      </nav>
-    </div>
+<div class="wrap">
+ 
+  <header class="top">
+    <div class="brand">games</div>
+    <nav>
+      <a href="index.html">home</a>
+      <a href="pages/game.html">arcade</a>
+      <a href="pages/about.html">about</a>
+      <a href="#" id="githubLink">github</a>
+    </nav>
   </header>
-
-  <main id="main">
-
-    <!-- Hero -->
-    <section class="hero shell">
-      <div class="hero-grid">
-        <div>
-          <h1>
-            <span class="hero-line hero-line--glow">Plug in</span>
-            <span class="hero-line hero-line--outline">a cabinet.</span>
-          </h1>
-          <p class="hero-sub">
-            An empty neon arcade, wired and ready. Drop a game folder into
-            <code>games/</code>, add one line to <code>js/games.js</code>, and it
-            appears on this page with artwork, filters and a score slot.
-          </p>
-          <div class="hero-actions">
-            <a class="btn btn--primary" href="#games">See the slots</a>
-            <a class="btn btn--ghost" href="pages/about.html">How it wires up</a>
-          </div>
-          <div class="hero-facts">
-            <div><b>0</b><span>dependencies</span></div>
-            <div><b>1</b><span>file to register a game</span></div>
-            <div><b>∞</b><span>cabinets supported</span></div>
-          </div>
-        </div>
-
-        <div class="visual-panel" data-glow>
-          <div class="visual-inner">
-            <canvas id="heroGrid" width="640" height="440" role="img"
-                    aria-label="A neon grid stretching toward a setting sun"></canvas>
-            <div class="visual-caption">
-              <span><i class="live-dot"></i>Arcade floor, powered up</span>
-              <span>waiting for input</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Marquee -->
-    <div class="marquee" aria-hidden="true">
-      <div class="marquee-track">
-        <span>canvas ready <i>◆</i> no build step <i>◆</i> scores saved locally <i>◆</i> sound built in <i>◆</i> mobile friendly <i>◆</i></span>
-        <span>canvas ready <i>◆</i> no build step <i>◆</i> scores saved locally <i>◆</i> sound built in <i>◆</i> mobile friendly <i>◆</i></span>
-      </div>
-    </div>
-
-    <!-- Game slots -->
-    <section class="band shell reveal" id="games">
-      <div class="band-head">
-        <h2>The floor</h2>
-        <p>Every game registered in <code>js/games.js</code> lands here as a card, filterable and searchable.</p>
-      </div>
-
-      <div class="arcade-controls">
-        <div class="filter-row" role="group" aria-label="Filter games by genre">
-          <button class="chip" type="button" data-filter="all" aria-pressed="true">All</button>
-          <button class="chip" type="button" data-filter="arcade" aria-pressed="false">Arcade</button>
-          <button class="chip" type="button" data-filter="action" aria-pressed="false">Action</button>
-          <button class="chip" type="button" data-filter="puzzle" aria-pressed="false">Puzzle</button>
-        </div>
-        <div class="search-field">
-          <label for="gameSearch" class="visually-hidden">Search games</label>
-          <input id="gameSearch" type="search" placeholder="Search by name or control" autocomplete="off">
-        </div>
-      </div>
-
-      <!-- Cards are built by js/main.js from js/games.js -->
-      <div class="game-grid" id="gameGrid"></div>
-
-      <p class="empty-note" id="noResults" hidden>
-        Nothing matches that search. Clear the box or choose “All”.
-      </p>
-    </section>
-
-    <!-- What you get -->
-    <section class="band band--tight shell reveal">
-      <div class="band-head">
-        <h2>What is already wired</h2>
-      </div>
-      <div class="feature-grid">
-        <div class="feature">
-          <h3>A toolkit for your game</h3>
-          <p><code>js/game.js</code> hands you a frame loop, sound, saved best scores and input helpers.</p>
-        </div>
-        <div class="feature">
-          <h3>A shell that fits</h3>
-          <p><code>css/game.css</code> styles the canvas, scoreboard and overlays, so a new game looks native on day one.</p>
-        </div>
-        <div class="feature">
-          <h3>Runs from a folder</h3>
-          <p>Relative paths throughout. Double-click <code>index.html</code> and the whole site works offline.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA -->
-    <section class="band band--tight shell reveal">
-      <div class="cta-panel" data-glow>
-        <div>
-          <h2>Ready for your first game</h2>
-          <p>Copy the folder shape from the About page and the arcade picks it up automatically.</p>
-        </div>
-        <a class="btn btn--violet" href="pages/about.html">Read the setup</a>
-      </div>
-    </section>
-
-  </main>
-
-  <footer class="site-footer">
-    <div class="shell">
-      <div class="footer-grid">
-        <div>
-          <a class="brand" href="index.html">
-            <img src="images/logo.svg" alt="">
-            Cartridge Club
-          </a>
-          <p class="footer-blurb">A neon shell for browser games. HTML, CSS and JavaScript — nothing else.</p>
-        </div>
-        <div>
-          <h4>Pages</h4>
-          <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="pages/game.html">Arcade</a></li>
-            <li><a href="pages/about.html">About</a></li>
-            <li><a href="pages/contact.html">Contact</a></li>
-          </ul>
-        </div>
-        <div>
-          <h4>Build</h4>
-          <ul>
-            <li><a href="pages/about.html">Add a game</a></li>
-            <li><a href="pages/about.html">Folder map</a></li>
-            <li><a href="pages/contact.html">Report a bug</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="footer-note">
-        <p>&copy; <span id="year">2026</span> Cartridge Club. Built for learning, free to copy.</p>
-      </div>
-    </div>
-  </footer>
-
-  <script src="js/games.js"></script>
-  <script src="js/main.js"></script>
+ 
+  <div class="search">
+    <input id="q" type="search" placeholder="search games" aria-label="search games">
+  </div>
+ 
+  <div class="cats" role="group" aria-label="filter by category">
+    <button aria-pressed="true" data-cat="all">all</button>
+    <button aria-pressed="false" data-cat="arcade">arcade</button>
+    <button aria-pressed="false" data-cat="platformer">platformer</button>
+    <button aria-pressed="false" data-cat="puzzle">puzzle</button>
+  </div>
+ 
+  <section>
+    <h2>starred games</h2>
+    <div class="grid" id="starred"></div>
+    <p class="empty" id="starred-empty">star a game to pin it here.</p>
+  </section>
+ 
+  <section>
+    <h2>all games</h2>
+    <div class="grid" id="all"></div>
+    <p class="empty" id="all-empty" hidden>no games match that search.</p>
+  </section>
+ 
+  <footer id="footNote">3 placeholder slots — register your games in js/games.js.</footer>
+</div>
+ 
+<script src="js/games.js"></script>
+<script>
+/* placeholder artwork: swap `art` for an image path when you have one */
+function placeholderArt(a, b){
+  const svg =
+    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 100" preserveAspectRatio="none">' +
+      '<defs>' +
+        '<linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+          '<stop offset="0" stop-color="' + a + '"/><stop offset="1" stop-color="' + b + '"/>' +
+        '</linearGradient>' +
+        '<pattern id="p" width="20" height="20" patternUnits="userSpaceOnUse">' +
+          '<path d="M20 0H0V20" fill="none" stroke="rgba(255,255,255,.12)" stroke-width="1"/>' +
+        '</pattern>' +
+      '</defs>' +
+      '<rect width="320" height="100" fill="url(#g)"/>' +
+      '<rect width="320" height="100" fill="url(#p)"/>' +
+    '</svg>';
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svg);
+}
+ 
+/* Real games come from js/games.js (window.CC_GAMES). If it's empty,
+   fall back to three placeholder slots so the page still shows something. */
+const PLACEHOLDER = [
+  { id:"one",   name:"game one",   cat:"arcade",     art:placeholderArt("#1b3b2a","#050806"), href:"#" },
+  { id:"two",   name:"game two",   cat:"platformer", art:placeholderArt("#2a2350","#07060f"), href:"#" },
+  { id:"three", name:"game three", cat:"puzzle",     art:placeholderArt("#3d2418","#0a0605"), href:"#" }
+];
+ 
+const REGISTRY = (window.CC_GAMES || []).map(g => ({
+  id:   g.id,
+  name: (g.title || g.id || "").toLowerCase(),
+  cat:  g.genre || "arcade",
+  art:  g.thumb || placeholderArt("#1b3b2a","#050806"),
+  href: g.path || "#"
+}));
+ 
+const GAMES = REGISTRY.length ? REGISTRY : PLACEHOLDER;
+ 
+/* Update the footer note when real games are in play */
+if (REGISTRY.length) {
+  document.getElementById("footNote").textContent =
+    REGISTRY.length + " game" + (REGISTRY.length === 1 ? "" : "s") + " loaded from js/games.js.";
+}
+ 
+/* Star / favourite persistence */
+let starred = new Set();
+try { starred = new Set(JSON.parse(localStorage.getItem("starred") || "[]")); } catch (e) {}
+function save(){ try { localStorage.setItem("starred", JSON.stringify([...starred])); } catch (e) {} }
+ 
+let cat = "all", query = "";
+ 
+function card(g){
+  const on = starred.has(g.id);
+  const el = document.createElement("a");
+  el.className = "card";
+  el.href = g.href;
+  el.innerHTML =
+    '<img class="art" src="' + g.art + '" alt="">' +
+    '<span class="name">' + g.name + '</span>' +
+    '<button class="star" aria-pressed="' + on + '" aria-label="star ' + g.name + '">' +
+    (on ? "\u2605" : "\u2606") + '</button>';
+  el.querySelector(".star").addEventListener("click", e => {
+    e.preventDefault(); e.stopPropagation();
+    starred.has(g.id) ? starred.delete(g.id) : starred.add(g.id);
+    save(); render();
+  });
+  return el;
+}
+ 
+function render(){
+  const all = document.getElementById("all");
+  const star = document.getElementById("starred");
+  all.innerHTML = ""; star.innerHTML = "";
+ 
+  const shown = GAMES.filter(g => (cat === "all" || g.cat === cat) && g.name.includes(query));
+  shown.forEach(g => all.appendChild(card(g)));
+  document.getElementById("all-empty").hidden = shown.length > 0;
+ 
+  const fav = GAMES.filter(g => starred.has(g.id));
+  fav.forEach(g => star.appendChild(card(g)));
+  document.getElementById("starred-empty").hidden = fav.length > 0;
+}
+ 
+document.querySelectorAll(".cats button").forEach(b => {
+  b.addEventListener("click", () => {
+    cat = b.dataset.cat;
+    document.querySelectorAll(".cats button").forEach(o => o.setAttribute("aria-pressed", String(o === b)));
+    render();
+  });
+});
+ 
+document.getElementById("q").addEventListener("input", e => {
+  query = e.target.value.trim().toLowerCase();
+  render();
+});
+ 
+render();
+</script>
 </body>
 </html>
